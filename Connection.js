@@ -79,9 +79,6 @@ function Connection(socket, parentOrOptions, callback) {
 
 	// Close listeners
 	var onclose = function () {
-		if (that.readyState === that.CONNECTING || that.readyState === that.OPEN) {
-			that.emit('close', 1006, '')
-		}
 		that.readyState = this.CLOSED
 		if (that.frameBuffer instanceof InStream) {
 			that.frameBuffer.end()
@@ -214,13 +211,9 @@ Connection.prototype.sendPing = function (data) {
  * @fires close
  */
 Connection.prototype.close = function (code, reason) {
-	if (this.readyState === this.OPEN) {
-		this.socket.write(frame.createCloseFrame(code, reason, !this.server))
-		this.readyState = this.CLOSING
-	} else if (this.readyState !== this.CLOSED) {
+
 		this.socket.end()
 		this.readyState = this.CLOSED
-	}
 	this.emit('close', code, reason)
 }
 
